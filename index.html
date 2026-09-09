@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧮 乘法练习</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        /* 题目显示区域 */
+        .question-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .question {
+            font-size: 42px;
+            font-weight: bold;
+            color: #2c3e50;
+            letter-spacing: 5px;
+        }
+
+        .question span {
+            display: inline-block;
+            min-width: 50px;
+        }
+
+        /* 输入区域 */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 15px;
+            font-size: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+            text-align: center;
+        }
+
+        .input-group input:focus {
+            border-color: #667eea;
+        }
+
+        .input-group button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+        }
+
+        .input-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .input-group button:active {
+            transform: translateY(0);
+        }
+
+        /* 结果消息 */
+        .result {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .result.correct {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .result.wrong {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        /* 统计信息 */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 2px solid #ecf0f1;
+            margin-top: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .stat-number.green { color: #27ae60; }
+        .stat-number.red { color: #e74c3c; }
+        .stat-number.blue { color: #3498db; }
+
+        /* 按钮组 */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-quit {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-quit:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-reset {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+
+        /* 结束界面 */
+        .game-over {
+            display: none;
+            text-align: center;
+            animation: slideIn 0.5s ease;
+        }
+
+        .game-over h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .game-over .final-stats {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .final-stats p {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #2c3e50;
+        }
+
+        .final-stats .highlight {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-restart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 键盘提示 */
+        .hint {
+            text-align: center;
+            color: #bdc3c7;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 480px) {
+            .container { padding: 20px; }
+            .question { font-size: 30px; }
+            .input-group input { font-size: 16px; padding: 12px; }
+            .input-group button { padding: 12px 20px; font-size: 16px; }
+            .stats { flex-direction: column; gap: 10px; }
+            .button-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🧮 乘法练习</h1>
+    <p class="subtitle">按 Enter 键快速提交</p>
+
+    <!-- 游戏主界面 -->
+    <div id="gameArea">
+        <div class="question-box">
+            <div class="question">
+                <span id="num1">0</span>
+                <span>×</span>
+                <span id="num2">0</span>
+                <span>=</span>
+                <span>?</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="answerInput" placeholder="输入答案" autofocus>
+            <button onclick="checkAnswer()">提交</button>
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number blue" id="totalQuestions">0</div>
+                <div class="stat-label">📝 总题数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number green" id="correctCount">0</div>
+                <div class="stat-label">✅ 正确</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number red" id="wrongCount">0</div>
+                <div class="stat-label">❌ 错误</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number blue" id="accuracy">0%</div>
+                <div class="stat-label">📊 正确率</div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-quit" onclick="quitGame()">🚪 退出练习</button>
+            <button class="btn btn-reset" onclick="resetGame()">🔄 重新开始</button>
+        </div>
+    </div>
+
+    <!-- 结束界面 -->
+    <div id="gameOverArea" class="game-over">
+        <h2>📊 练习结束</h2>
+        <div class="final-stats">
+            <p>📝 总题数：<span id="finalTotal">0</span></p>
+            <p>✅ 正确数：<span id="finalCorrect">0</span></p>
+            <p>📊 正确率：<span class="highlight" id="finalAccuracy">0%</span></p>
+        </div>
+        <button class="btn-restart" onclick="resetGame()">🔄 再来一次</button>
+    </div>
+</div>
+
+<script>
+    // ========== 游戏状态 ==========
+    let num1, num2, correctAnswer;
+    let totalQuestions = 0;
+    let correctAnswers = 0;
+    let wrongAnswers = 0;
+    let isGameOver = false;
+
+    // ========== DOM 引用 ==========
+    const num1El = document.getElementById('num1');
+    const num2El = document.getElementById('num2');
+    const answerInput = document.getElementById('answerInput');
+    const resultDiv = document.getElementById('result');
+    const totalEl = document.getElementById('totalQuestions');
+    const correctEl = document.getElementById('correctCount');
+    const wrongEl = document.getElementById('wrongCount');
+    const accuracyEl = document.getElementById('accuracy');
+    const gameArea = document.getElementById('gameArea');
+    const gameOverArea = document.getElementById('gameOverArea');
+
+    // ========== 核心函数 ==========
+    
+    // 生成新题目
+    function generateQuestion() {
+        num1 = Math.floor(Math.random() * 10);  // 0-9
+        num2 = Math.floor(Math.random() * 10);
+        correctAnswer = num1 * num2;
+        
+        num1El.textContent = num1;
+        num2El.textContent = num2;
+        
+        answerInput.value = '';
+        answerInput.focus();
+        
+        // 隐藏结果
+        resultDiv.className = 'result';
+        resultDiv.style.display = 'none';
+    }
+
+    // 检查答案
+    function checkAnswer() {
+        if (isGameOver) return;
+        
+        const userAnswer = parseInt(answerInput.value);
+        
+        // 验证输入
+        if (isNaN(userAnswer)) {
+            alert('⚠️ 请输入有效数字！');
+            answerInput.focus();
+            return;
+        }
+        
+        // 更新统计
+        totalQuestions++;
+        let isCorrect = false;
+        
+        // 判断答案
+        if (userAnswer === correctAnswer) {
+            correctAnswers++;
+            isCorrect = true;
+            showResult('✅ 正确！太棒了！', 'correct');
+        } else {
+            wrongAnswers++;
+            showResult(`❌ 错误！正确答案是 ${correctAnswer}`, 'wrong');
+        }
+        
+        // 更新显示
+        updateStats();
+        
+        // 生成下一题（延迟一点点，让用户看到反馈）
+        setTimeout(() => {
+            if (!isGameOver) {
+                generateQuestion();
+            }
+        }, 600);
+    }
+
+    // 显示结果消息
+    function showResult(message, type) {
+        resultDiv.textContent = message;
+        resultDiv.className = 'result ' + type;
+        resultDiv.style.display = 'block';
+    }
+
+    // 更新统计数据
+    function updateStats() {
+        totalEl.textContent = totalQuestions;
+        correctEl.textContent = correctAnswers;
+        wrongEl.textContent = wrongAnswers;
+        
+        const accuracy = totalQuestions > 0 
+            ? Math.round((correctAnswers / totalQuestions) * 100) 
+            : 0;
+        accuracyEl.textContent = accuracy + '%';
+    }
+
+    // ========== 退出和重置 ==========
+    
+    // 退出练习
+    function quitGame() {
+        if (totalQuestions === 0) {
+            alert('你还没有做题呢！先练习一下吧 😊');
+            return;
+        }
+        
+        if (confirm('确定要退出吗？')) {
+            isGameOver = true;
+            gameArea.style.display = 'none';
+            gameOverArea.style.display = 'block';
+            
+            // 显示最终统计
+            document.getElementById('finalTotal').textContent = totalQuestions;
+            document.getElementById('finalCorrect').textContent = correctAnswers;
+            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+            document.getElementById('finalAccuracy').textContent = accuracy + '%';
+        }
+    }
+
+    // 重置游戏
+    function resetGame() {
+        // 重置状态
+        totalQuestions = 0;
+        correctAnswers = 0;
+        wrongAnswers = 0;
+        isGameOver = false;
+        
+        // 重置界面
+        gameArea.style.display = 'block';
+        gameOverArea.style.display = 'none';
+        resultDiv.className = 'result';
+        resultDiv.style.display = 'none';
+        
+        updateStats();
+        generateQuestion();
+    }
+
+    // ========== 键盘事件 ==========
+    answerInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();  // 阻止表单提交
+            checkAnswer();
+        }
+    });
+
+    // ========== 启动游戏 ==========
+    generateQuestion();
+    updateStats();
+</script>
+
+</body>
+</html>
